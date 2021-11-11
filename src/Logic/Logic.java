@@ -130,7 +130,7 @@ public class Logic {
                 displayWinner(winner);
 
                 try {
-                    Thread.sleep(5000);
+                    Thread.sleep(2500);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -152,7 +152,7 @@ public class Logic {
             displayWinner(winner);
 
             try {
-                Thread.sleep(5000);
+                Thread.sleep(2500);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -164,7 +164,7 @@ public class Logic {
         if (winner == 0) {
             displayWinner(0);
             try {
-                Thread.sleep(5000);
+                Thread.sleep(2500);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -197,6 +197,12 @@ public class Logic {
         }
 
         myFrame.setScoreLabel(opponentPoints + " - " + userPoints);
+
+        try {
+            Thread.sleep(2500);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
     }
 }
