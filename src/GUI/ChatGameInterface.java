@@ -51,7 +51,7 @@ public class ChatGameInterface extends JFrame {
 
     public void textToChat(String string) {
 
-        ChatTextBoxReal.setText(ChatTextBoxReal.getText() + string);
+        ChatTextBoxReal.setText(ChatTextBoxReal.getText() + "Opponent: " + string + "\n");
     }
 
     // joc
@@ -64,7 +64,7 @@ public class ChatGameInterface extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
 
-                ChatTextBoxReal.setText(ChatTextBoxReal.getText() + messageTextBoxReal.getText() + "\n");
+                ChatTextBoxReal.setText(ChatTextBoxReal.getText() + "Me: " + messageTextBoxReal.getText() + "\n");
 
                 logic.fromChat(messageTextBoxReal.getText()); // functia care trimite pe client / server
 
@@ -77,7 +77,7 @@ public class ChatGameInterface extends JFrame {
         topLeftBtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (logic.positionClicked(0, 0)) {
+                if (logic.positionClicked(0, 0) && logic.isDoIstart()) {
                     logic.fillPositionInMatrix(0, 0, 1);
                     logic.fromGame("00");
                 }
@@ -87,7 +87,7 @@ public class ChatGameInterface extends JFrame {
         topMidBtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (logic.positionClicked(0, 1)) {
+                if (logic.positionClicked(0, 1) && logic.isDoIstart()) {
                     logic.fillPositionInMatrix(0, 1, 1);
                     logic.fromGame("01");
                 }
@@ -97,7 +97,7 @@ public class ChatGameInterface extends JFrame {
         topRightBtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (logic.positionClicked(0, 2)) {
+                if (logic.positionClicked(0, 2) && logic.isDoIstart()) {
                     logic.fillPositionInMatrix(0, 2, 1);
                     logic.fromGame("02");
                 }
@@ -107,7 +107,7 @@ public class ChatGameInterface extends JFrame {
         midLeftBtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (logic.positionClicked(1, 0)) {
+                if (logic.positionClicked(1, 0) && logic.isDoIstart()) {
                     logic.fillPositionInMatrix(1, 0, 1);
                     logic.fromGame("10");
                 }
@@ -117,7 +117,7 @@ public class ChatGameInterface extends JFrame {
         midMidBtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (logic.positionClicked(1, 1)) {
+                if (logic.positionClicked(1, 1) && logic.isDoIstart()) {
                     logic.fillPositionInMatrix(1, 1, 1);
                     logic.fromGame("11");
                 }
@@ -127,7 +127,7 @@ public class ChatGameInterface extends JFrame {
         midRightBtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (logic.positionClicked(1, 2)) {
+                if (logic.positionClicked(1, 2) && logic.isDoIstart()) {
                     logic.fillPositionInMatrix(1, 2, 1);
                     logic.fromGame("12");
                 }
@@ -137,7 +137,7 @@ public class ChatGameInterface extends JFrame {
         bottomLeftBtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (logic.positionClicked(2, 0)) {
+                if (logic.positionClicked(2, 0) && logic.isDoIstart()) {
                     logic.fillPositionInMatrix(2, 0, 1);
                     logic.fromGame("20");
                 }
@@ -147,7 +147,7 @@ public class ChatGameInterface extends JFrame {
         bottomMidBtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (logic.positionClicked(2, 1)) {
+                if (logic.positionClicked(2, 1) && logic.isDoIstart()) {
                     logic.fillPositionInMatrix(2, 1, 1);
                     logic.fromGame("21");
                 }
@@ -157,7 +157,7 @@ public class ChatGameInterface extends JFrame {
         bottomRightBtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (logic.positionClicked(2, 2)) {
+                if (logic.positionClicked(2, 2) && logic.isDoIstart()) {
                     logic.fillPositionInMatrix(2, 2, 1);
                     logic.fromGame("22");
                 }

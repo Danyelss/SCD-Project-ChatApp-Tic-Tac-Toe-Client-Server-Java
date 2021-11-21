@@ -17,21 +17,34 @@ public class Logic {
     private int totalMoves = 0;
     private int userPoints = 0;
     private int opponentPoints = 0;
+    private boolean doIstart;
 
-    private ChatGameInterface myFrame;
+    public boolean isDoIstart() {
+        return doIstart;
+    }
+
+    private ChatGameInterface userInterface;
 
     public Logic(Server server) {
         this.type = "server";
         this.server = server;
+        this.doIstart = true;
 
-        this.myFrame = new ChatGameInterface(this);
+        this.userInterface = new ChatGameInterface(this);
+
+        new EndChecker().start();
+
     }
 
     public Logic(Client client) {
         this.type = "client";
         this.client = client;
+        this.doIstart = false;
 
-        this.myFrame = new ChatGameInterface(this);
+        this.userInterface = new ChatGameInterface(this);
+
+        new EndChecker().start();
+
     }
 
     private void decode(String string) {
@@ -41,10 +54,9 @@ public class Logic {
                 break;
             case '$':
                 decodeMove(string.substring(1));
+                doIstart = true;
                 break;
-            case '%':
 
-                break;
         }
     }
 
@@ -53,10 +65,10 @@ public class Logic {
     private void sendData(String string) {
         switch (type) {
             case "server":
-                server.transmitData(string);
+                server.getSender().transmitData(string);
                 break;
             case "client":
-                client.transmitData(string);
+                client.getSender().transmitData(string);
                 break;
         }
     }
@@ -68,18 +80,19 @@ public class Logic {
     // Chat
 
     public void fromChat(String string) {
-        sendData("@" + string + "\n");
+        sendData("@" + string);
     }
 
     private void toChat(String string) {
 
-        myFrame.textToChat(string);
+        userInterface.textToChat(string);
     }
 
     // Joc
 
     public void fromGame(String string) {
-        sendData("$" + string + "\n");
+        sendData("$" + string);
+        doIstart = false;
     }
 
     public boolean positionClicked(int i, int j) {
@@ -93,18 +106,8 @@ public class Logic {
 
     public void fillPositionInMatrix(int i, int j, int user) {
         gameMatrix[i][j] = user;
-        myFrame.buttonColor(i, j, user == 1 ? Color.GREEN : Color.ORANGE);
+        userInterface.buttonColor(i, j, user == 1 ? Color.GREEN : Color.ORANGE);
         totalMoves++;
-
-        try {
-            Thread.sleep(500);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        if (totalMoves == 9) {
-            decideWinner();
-        }
     }
 
     private void decodeMove(String string) {
@@ -115,53 +118,63 @@ public class Logic {
     }
 
     private void decideWinner() {
-        int winner = 0;
+
+        int winner = -1;
 
         for (int i = 0; i < 3; i++) {
             if (gameMatrix[i][0] == gameMatrix[i][1] && gameMatrix[i][0] == gameMatrix[i][2] ||
                     gameMatrix[0][i] == gameMatrix[1][i] && gameMatrix[0][i] == gameMatrix[2][i]) {
 
-                if (gameMatrix[i][0] == gameMatrix[i][1] && gameMatrix[i][0] == gameMatrix[i][2])
+                if ((gameMatrix[i][0] == gameMatrix[i][1] && gameMatrix[i][0] == gameMatrix[i][2])
+                        && gameMatrix[i][0] != 0 && gameMatrix[i][1] != 0 && gameMatrix[i][2] != 0)
                     winner = gameMatrix[i][0];
 
-                if (gameMatrix[0][i] == gameMatrix[1][i] && gameMatrix[0][i] == gameMatrix[2][i])
+                if ((gameMatrix[0][i] == gameMatrix[1][i] && gameMatrix[0][i] == gameMatrix[2][i])
+                        && gameMatrix[0][i] != 0 && gameMatrix[1][i] != 0 && gameMatrix[2][i] != 0)
                     winner = gameMatrix[0][i];
 
-                displayWinner(winner);
+                if (winner > 0) {
+                    displayWinner(winner);
 
-                try {
-                    Thread.sleep(2500);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    newGame();
+
+                    return;
                 }
-                newGame();
-
-                return;
             }
         }
 
         if (gameMatrix[0][0] == gameMatrix[1][1] && gameMatrix[0][0] == gameMatrix[2][2] ||
                 gameMatrix[0][2] == gameMatrix[1][1] && gameMatrix[0][2] == gameMatrix[2][0]) {
 
-            if (gameMatrix[0][0] == gameMatrix[1][1] && gameMatrix[0][0] == gameMatrix[2][2])
+            if ((gameMatrix[0][0] == gameMatrix[1][1] && gameMatrix[0][0] == gameMatrix[2][2])
+                    && gameMatrix[0][0] != 0 && gameMatrix[1][1] != 0 && gameMatrix[2][2] != 0)
                 winner = gameMatrix[0][0];
 
-            if (gameMatrix[0][2] == gameMatrix[1][1] && gameMatrix[0][2] == gameMatrix[2][0])
+            if ((gameMatrix[0][2] == gameMatrix[1][1] && gameMatrix[0][2] == gameMatrix[2][0])
+                    && gameMatrix[0][2] != 0 && gameMatrix[1][1] != 0 && gameMatrix[2][0] != 0)
                 winner = gameMatrix[0][0];
 
-            displayWinner(winner);
+            if (winner > 0) {
 
-            try {
-                Thread.sleep(2500);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+                displayWinner(winner);
+
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+                newGame();
+                return;
             }
-
-            newGame();
-            return;
         }
 
-        if (winner == 0) {
+        if (totalMoves == 9) {
             displayWinner(0);
             try {
                 Thread.sleep(2500);
@@ -174,36 +187,59 @@ public class Logic {
     }
 
     private void newGame() {
+
+        if (doIstart) {
+            userInterface.setInformationalLabel("Choose!");
+        } else {
+            userInterface.setInformationalLabel("Wait!");
+        }
+
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
                 fillPositionInMatrix(i, j, 0);
-                myFrame.buttonColor(i, j, Color.WHITE);
+                userInterface.buttonColor(i, j, Color.WHITE);
                 totalMoves = 0;
+
             }
         }
     }
 
     private void displayWinner(int user) {
         if (user == 0) {
-            myFrame.setInformationalLabel("Draw!");
+            userInterface.setInformationalLabel("Draw!");
         }
         if (user == 1) {
-            myFrame.setInformationalLabel("You win!");
+            userInterface.setInformationalLabel("You win!");
             userPoints++;
         }
         if (user == 2) {
-            myFrame.setInformationalLabel("You lose!");
+            userInterface.setInformationalLabel("You lose!");
             opponentPoints++;
         }
 
-        myFrame.setScoreLabel(opponentPoints + " - " + userPoints);
+        userInterface.setScoreLabel(opponentPoints + " - " + userPoints);
 
-        try {
-            Thread.sleep(2500);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+    }
+
+    private class EndChecker extends Thread {
+
+        @Override
+        public void run() {
+            while (true) {
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                if (totalMoves > 4)
+                    decideWinner();
+
+                System.out.println("endChecker");
+                System.out.println(gameMatrix[0][0] + " " + gameMatrix[0][1] + " " + gameMatrix[0][2]);
+                System.out.println(gameMatrix[1][0] + " " + gameMatrix[1][1] + " " + gameMatrix[1][2]);
+                System.out.println(gameMatrix[2][0] + " " + gameMatrix[2][1] + " " + gameMatrix[2][2]);
+            }
         }
-
     }
 }
 
