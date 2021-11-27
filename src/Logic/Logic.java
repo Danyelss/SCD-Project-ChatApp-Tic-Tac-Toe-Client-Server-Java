@@ -164,7 +164,7 @@ public class Logic {
                 displayWinner(winner);
 
                 try {
-                    Thread.sleep(1000);
+                    Thread.sleep(5000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -177,7 +177,7 @@ public class Logic {
         if (totalMoves == 9) {
             displayWinner(0);
             try {
-                Thread.sleep(2500);
+                Thread.sleep(5000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
